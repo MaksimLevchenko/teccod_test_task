@@ -9,7 +9,6 @@ import 'package:teccod_test_task/features/order_creation/data/datasources/order_
 import 'package:teccod_test_task/features/order_creation/data/repositories/order_repository_impl.dart';
 import 'package:teccod_test_task/features/order_creation/domain/repositories/order_repository.dart';
 import 'package:teccod_test_task/features/order_creation/domain/usecases/create_order_usecase.dart';
-import 'package:teccod_test_task/features/order_creation/presentation/bloc/order_create_bloc.dart';
 
 class OrderCreationProviders {
   const OrderCreationProviders._();
@@ -48,18 +47,6 @@ class OrderCreationProviders {
         create: (BuildContext context) {
           return CreateOrderUseCase(
             orderRepository: context.read<OrderRepository>(),
-          );
-        },
-      ),
-    ];
-  }
-
-  static List<BlocProvider<dynamic>> get blocProviders {
-    return <BlocProvider<dynamic>>[
-      BlocProvider<OrderCreateBloc>(
-        create: (BuildContext context) {
-          return OrderCreateBloc(
-            createOrderUseCase: context.read<CreateOrderUseCase>(),
           );
         },
       ),

@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'package:teccod_test_task/core/network/api_exception.dart';
 import 'package:teccod_test_task/core/network/error_parser.dart';
 import 'package:teccod_test_task/core/network/http_api_client.dart';
 import 'package:teccod_test_task/core/network/network_exceptions.dart';
 import 'package:teccod_test_task/features/order_creation/data/datasources/order_remote_data_source.dart';
-import 'package:teccod_test_task/features/order_creation/data/models/order_model.dart';
 import 'package:teccod_test_task/features/order_creation/domain/entities/order.dart';
 
 class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
@@ -32,11 +32,10 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
 
       if (response.statusCode == 200) {
         final dynamic decoded = jsonDecode(response.body);
-        if (decoded is! Map<String, dynamic>) {
+        if (decoded is! Map) {
           throw const FormatException('Response body must be JSON object.');
         }
-        final OrderModel model = OrderModel.fromJson(decoded);
-        return model.toEntity();
+        return Order.fromJson(Map<String, dynamic>.from(decoded));
       }
 
       if (response.statusCode >= 400) {
@@ -60,24 +59,54 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
         statusCode: response.statusCode,
         details: response.body,
       );
-    } on ApiException {
+    } on ApiException catch (error, stackTrace) {
+      log(
+        'createOrder failed with ApiException: ${error.toString()}',
+        name: 'OrderRemoteDataSourceImpl',
+        error: error,
+        stackTrace: stackTrace,
+      );
       rethrow;
-    } on SocketException catch (error) {
+    } on SocketException catch (error, stackTrace) {
+      log(
+        'createOrder failed with SocketException: ${error.toString()}',
+        name: 'OrderRemoteDataSourceImpl',
+        error: error,
+        stackTrace: stackTrace,
+      );
       throw ApiException(
         NetworkExceptionMessages.noInternet,
         details: error,
       );
-    } on TimeoutException catch (error) {
+    } on TimeoutException catch (error, stackTrace) {
+      log(
+        'createOrder failed with TimeoutException: ${error.toString()}',
+        name: 'OrderRemoteDataSourceImpl',
+        error: error,
+        stackTrace: stackTrace,
+      );
       throw ApiException(
         NetworkExceptionMessages.requestTimeout,
         details: error,
       );
-    } on FormatException catch (error) {
+    } on FormatException catch (error, stackTrace) {
+      log(
+        'createOrder failed with FormatException: ${error.toString()}',
+        name: 'OrderRemoteDataSourceImpl',
+        error: error,
+        stackTrace: stackTrace,
+      );
       throw ApiException(
         NetworkExceptionMessages.invalidResponse,
         details: error,
       );
-    } catch (error) {
+    } catch (error, stackTrace) {
+      log(
+        'createOrder failed with unexpected error: ${error.toString()}',
+        name: 'OrderRemoteDataSourceImpl',
+        error: error,
+        stackTrace: stackTrace,
+      );
       throw ApiException(
         NetworkExceptionMessages.createOrderFailed,
         details: error,

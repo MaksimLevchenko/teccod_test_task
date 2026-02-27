@@ -1,4 +1,4 @@
-enum OrderCreateStatus {
+enum OrderControllerState {
   initial,
   loading,
   success,

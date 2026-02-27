@@ -35,19 +35,14 @@ class _OrderCreationAppState extends State<OrderCreationApp> {
   Widget build(BuildContext context) {
     final AppConfig appConfig = AppConfig.fromEnvironment();
     return MultiRepositoryProvider(
-      providers: <RepositoryProvider<dynamic>>[
+      providers: [
         RepositoryProvider<AppConfig>.value(value: appConfig),
         RepositoryProvider<http.Client>.value(value: _httpClient),
         ...OrderCreationProviders.repositoryProviders,
       ],
-      child: MultiBlocProvider(
-        providers: <BlocProvider<dynamic>>[
-          ...OrderCreationProviders.blocProviders,
-        ],
-        child: const MaterialApp(
-          title: 'Order Creation',
-          home: CreateOrderScreen(userId: 1, serviceId: 2),
-        ),
+      child: const MaterialApp(
+        title: 'Order Creation',
+        home: CreateOrderScreen(userId: 1, serviceId: 2),
       ),
     );
   }
